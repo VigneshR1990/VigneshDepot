@@ -6,4 +6,6 @@ public interface UserService {
 	
 	public long create(User user);
 
+	public User get(Long id);
+
 }

@@ -27,13 +27,25 @@ public class User {
 	@Size(max=255)
 	private String password;
 	
-	@Size(max=255)
+	
+	/*@Size(max=255)
 	private long mobNo;
 	
 	
 	@Size(max=255)
-	private String vehicleNo;
+	private String vehicleNo;*/
 	
+	
+	public User() {
+		
+	}
+	public User(Long id, String name, String email, String password) {
+		this.id =id;
+		this.name =name;
+		this.email =email;
+		this.password =password;
+		// TODO Auto-generated constructor stub
+	}
 	public Long getId() {
 		return id;
 	}
@@ -59,7 +71,7 @@ public class User {
 		this.password = password;
 	}
 	
-	public long getMobNo() {
+	/*public long getMobNo() {
 		return mobNo;
 	}
 	public void setMobNo(long mobNo) {
@@ -70,6 +82,6 @@ public class User {
 	}
 	public void setVehicleNo(String vehicleNo) {
 		this.vehicleNo = vehicleNo;
-	}
+	}*/
 	
 }

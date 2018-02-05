@@ -1,10 +1,10 @@
 package com.vehicle.review.controller;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,23 +31,33 @@ public class UserController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	
 	@PostMapping("/")
-	public ResponseEntity<?> create(@RequestBody @Valid User user){
+	public ResponseEntity<?> create(@RequestBody @Valid User user,HttpServletRequest request) throws URISyntaxException{
 		
 		long savedUserId = userService.create(user);
 		LOGGER.debug("User Id "+savedUserId);
 		HttpHeaders headers = new HttpHeaders(); 
-		URI location = linkTo(methodOn(this.getClass()).getById(savedUserId)).toUri(); 
-		LOGGER.debug(location.toString());
+		//URI location = linkTo(methodOn(this.getClass()).getById(savedUserId)).toUri(); 
+		//LOGGER.debug(location.toString());
+		String uri = request.getRequestURI();
+		LOGGER.debug("uri"+uri);
+		URI location = new URI("http://localhost:8888"+uri+savedUserId);
 		headers.setLocation(location);
-		return new ResponseEntity<String>("User registration successful", HttpStatus.OK);
+		return new ResponseEntity<String>("User registration successful",headers, HttpStatus.OK);
 		
 	}
 	
-	@GetMapping(value = "/{id}")
+	/*@GetMapping(value = "/{id}")
 	public ResponseEntity<User> getById(@PathVariable long id) {
 		
 		
 		return null;
+		
+	}*/
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<User> get(@PathVariable Long id) {
+		User user = userService.get(id);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 		
 	}
 }
