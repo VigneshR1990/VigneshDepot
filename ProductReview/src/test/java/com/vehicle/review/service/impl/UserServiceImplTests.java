@@ -41,6 +41,7 @@ public class UserServiceImplTests {
 	
 	@MockBean
 	private UserRepository userRepository;
+	  
 	
 	@Before
 	public void setUp() {
