@@ -1,0 +1,1 @@
+insert into User(id,name,email,password,enabled) values(1,'vignesh','vignesh.r90@gmail.com','','')

@@ -30,7 +30,7 @@ public class UserController {
 	UserService userService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	
-	@PostMapping("/")
+	@PostMapping("/add")
 	public ResponseEntity<?> create(@RequestBody @Valid User user,HttpServletRequest request) throws URISyntaxException{
 		
 		long savedUserId = userService.create(user);

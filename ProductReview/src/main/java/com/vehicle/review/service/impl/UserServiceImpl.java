@@ -3,6 +3,7 @@ package com.vehicle.review.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.vehicle.review.domain.User;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public long create(User user) {
 		// TODO Auto-generated method stub
+		user.setPassword(encryptPassword(user.getPassword()));
 		User savedUser = userRepository.save(user);
 		LOGGER.debug("Created User Id is " + savedUser.getId());
 		return savedUser.getId();
@@ -35,5 +37,12 @@ public class UserServiceImpl implements UserService {
 			throw new ServiceException("ID is Invalid", "INVALID_ID");
 		return user;
 	}
-
+	
+	
+	private String encryptPassword(String password) {
+		LOGGER.debug("encryptPassword : passwd : "+password);
+		String encryptedPasswd = new BCryptPasswordEncoder().encode(password);
+		LOGGER.debug("encryptPassword : encrypPpasswd : "+encryptedPasswd);
+		return encryptedPasswd;
+		}
 }
