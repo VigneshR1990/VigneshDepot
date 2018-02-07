@@ -16,6 +16,8 @@ import com.vehicle.review.security.rest.RestAuthenticationAccessDeniedHandler;
 import com.vehicle.review.security.rest.RestAuthenticationEntryPoint;
 import com.vehicle.review.security.rest.RestAuthenticationFailureHandler;
 import com.vehicle.review.security.rest.RestAuthenticationSuccessHandler;
+import com.vehicle.review.security.rest.StatelessAuthenticationFilter;
+import com.vehicle.review.security.rest.TokenAuthenticationService;
 import com.vehicle.review.service.UserDetailsService;
 
 @Configuration
@@ -41,7 +43,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private RestAuthenticationSuccessHandler restAuthenticationSuccessHandler;
-
+	
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
@@ -51,8 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/images/**").permitAll().antMatchers("/api/user/login").permitAll()
 				.antMatchers("/api/user/add").permitAll().antMatchers("/api/automobile/add").permitAll().anyRequest()
 				.authenticated().and()
-				.addFilterBefore(new LoginFilter("/api/user/login", userDetailsService, authenticationManager()),
-						UsernamePasswordAuthenticationFilter.class);
+				.addFilterBefore(new LoginFilter("/api/user/login", userDetailsService, authenticationManager(),tokenAuthenticationService),
+						UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new StatelessAuthenticationFilter(tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class);
 
 	}
 

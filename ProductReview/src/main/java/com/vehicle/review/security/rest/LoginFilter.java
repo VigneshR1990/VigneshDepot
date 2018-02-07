@@ -30,12 +30,14 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 	private UserDetailsService userDetailsService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginFilter.class);
 	private User principal;
-
+	private TokenAuthenticationService tokenAuthenticationService;
+	private UsernamePasswordAuthenticationToken loginToken;
 	public LoginFilter(String urlMapping, UserDetailsService userDetailsService,
-			AuthenticationManager authenticationManager) {
+			AuthenticationManager authenticationManager,TokenAuthenticationService tokenAuthenticationService) {
 		super(new AntPathRequestMatcher(urlMapping));
 		this.userDetailsService = userDetailsService;
 		this.setAuthenticationManager(authenticationManager);
+		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
 	@Override
@@ -49,11 +51,13 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 		if (user == null || StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getPassword())) {
 			throw new AuthenticationServiceException("Cannot authenticate. Invalid data posted.");
 		}
+		
 		// Lookup the complete User object from the database and create an
 		// Authentication for it
 		principal = (User) userDetailsService.loadUserByUsername(user.getUserName());
-		final UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(principal,
+		loginToken = new UsernamePasswordAuthenticationToken(principal,
 				user.getPassword(), principal.getAuthorities());
+		
 		Authentication authentication = getAuthenticationManager().authenticate(loginToken);
 		return authentication;
 	}
@@ -62,7 +66,9 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		SecurityContextHolder.getContext().setAuthentication(authResult);
+		SecurityContextHolder.getContext().setAuthentication(loginToken);
+		tokenAuthenticationService.addAuthentication(response, loginToken);
+		chain.doFilter(request, response);
 	}
 
 }
